@@ -47,3 +47,7 @@ let slowQueries = new MongoSlowQueryChecker({
   queryThreshold: 2 // The unit of time is in seconds.
 });
 ```
+
+
+### Changelog
+* 1.0.0 Initial release.
