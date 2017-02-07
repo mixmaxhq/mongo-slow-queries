@@ -50,4 +50,5 @@ let slowQueries = new MongoSlowQueryChecker({
 
 
 ### Changelog
+* 1.0.1 Fix which `query` we fingerprint.
 * 1.0.0 Initial release.
