@@ -68,7 +68,7 @@ class MongoSlowQueryChecker {
       var processed = _.map(inprog, (query) => {
         return {
           query,
-          fingerprint: fingerprint(query),
+          fingerprint: fingerprint(query.query),
           collection: query.ns ? query.ns.replace(/.*\./, '') : '(no collection)',
           indexed: query.planSummary && (query.planSummary.indexOf('IXSCAN') !== -1),
           waitingForLock: query.waitingForLock
