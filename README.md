@@ -3,7 +3,7 @@ A module for pulling slow queries from Mongo, tagged with metadata as well.
 
 ## Install
 ```
-$ npm install mongo-slow-queries --save
+$ yarn add mongo-slow-queries
 ```
 
 ## Usage
