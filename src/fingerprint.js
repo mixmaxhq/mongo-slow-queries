@@ -29,11 +29,11 @@ function arrayFingerprint(ra) {
  */
 function fingerprint(obj) {
   var keys = _.keys(obj),
-      fprint = '{ ';
+    fprint = '{ ';
 
   for (var i = 0; i < keys.length; i++) {
     var key = keys[i],
-        val = obj[key];
+      val = obj[key];
     if (_.isArray(val)) {
       fprint += `${key}: ${arrayFingerprint(val)}`;
     } else if (_.isObject(val)) {

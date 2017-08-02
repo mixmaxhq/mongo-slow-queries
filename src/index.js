@@ -5,8 +5,6 @@ const _ = require('underscore');
 
 const fingerprint = require('./fingerprint');
 
-const VALID_OPTIONS = ['db', 'runPeriod', 'queryThreshold'];
-
 /**
  * A utility class to simplify retrieving slow queries from Mongo.
  */
