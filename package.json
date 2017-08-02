@@ -4,7 +4,8 @@
   "description": "Utility for identifying slow queries in Mongo",
   "main": "src/index.js",
   "scripts": {
-    "test": "jasmine"
+    "test": "jasmine",
+    "lint": "eslint ."
   },
   "repository": {
     "type": "git",
@@ -23,9 +24,15 @@
   },
   "homepage": "https://github.com/mixmaxhq/mongo-slow-queries#readme",
   "devDependencies": {
-    "jasmine": "^2.5.3"
+    "eslint": ">=3",
+    "eslint-config-mixmax": "^0.6.0",
+    "jasmine": "^2.5.3",
+    "pre-commit": "^1.2.2"
   },
   "dependencies": {
     "underscore": "^1.8.3"
-  }
+  },
+  "pre-commit": [
+    "lint"
+  ]
 }
