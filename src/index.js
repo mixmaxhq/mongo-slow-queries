@@ -52,7 +52,8 @@ class MongoSlowQueryChecker {
    *   fingerprint: A fingerprint of the query based on the keys in the query,
    *   collection: The collection this query was run against (or `no collection`),
    *   indexed: If this query was able to use an index or not,
-   *   waitingForLock: True if the query is waiting for a lock, false otherwise
+   *   waitingForLock: True if the query is waiting for a lock, false otherwise,
+   *   appName: The client application responsible for this operation
    * }]
    * ```
    *
@@ -82,7 +83,8 @@ class MongoSlowQueryChecker {
           fingerprint: fingerprint(op.query),
           collection: op.ns ? op.ns.replace(/.*\./, '') : '(no collection)',
           indexed: op.planSummary && this.isIndexed(op),
-          waitingForLock: op.waitingForLock
+          waitingForLock: op.waitingForLock,
+          appName: op.appName
         };
       });
       done(null, processed);
