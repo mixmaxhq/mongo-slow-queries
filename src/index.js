@@ -5,6 +5,19 @@ const _ = require('underscore');
 
 const fingerprint = require('./fingerprint');
 
+const INDEXED_PLANS = ['IXSCAN', 'IDHACK'];
+
+/**
+ * @typedef {Object} CurrentOp
+ * @property {?string} appName        The identifier of the client application
+ * @property {string}  op             The type of operation e.g. 'update', 'insert', etc.
+ * @property {string}  ns             The namespace the operation targets
+ * @property {?string} planSummary    The query plan for the operation
+ * @property {boolean} waitingForLock Whether the operation is waiting for a lock
+ *
+ * @see https://docs.mongodb.com/manual/reference/command/currentOp/#currentop-output-fields
+ */
+
 /**
  * A utility class to simplify retrieving slow queries from Mongo.
  */
@@ -21,7 +34,7 @@ class MongoSlowQueryChecker {
    */
   constructor(options) {
     assert(options.db, 'Must provide a valid DB reference');
-    
+
     this.db = options.db;
     this.queryThreshold = 5;
     if (options.queryThreshold) {
@@ -63,17 +76,27 @@ class MongoSlowQueryChecker {
         return;
       }
 
-      var processed = _.map(inprog, (query) => {
+      var processed = _.map(inprog, (op) => {
         return {
-          query,
-          fingerprint: fingerprint(query.query),
-          collection: query.ns ? query.ns.replace(/.*\./, '') : '(no collection)',
-          indexed: query.planSummary && (query.planSummary.indexOf('IXSCAN') !== -1),
-          waitingForLock: query.waitingForLock
+          query: op,
+          fingerprint: fingerprint(op.query),
+          collection: op.ns ? op.ns.replace(/.*\./, '') : '(no collection)',
+          indexed: op.planSummary && this.isIndexed(op),
+          waitingForLock: op.waitingForLock
         };
       });
       done(null, processed);
     });
+  }
+
+  /**
+   * Given an operation with a planSummary, determines whether or not it's using an index.
+   *
+   * @param {CurrentOp} op
+   * @return {boolean} whether or not the given operation is using an index
+   */
+  isIndexed(op) {
+    return INDEXED_PLANS.some((p) => op.planSummary.indexOf(p) !== -1);
   }
 }
 
