@@ -24,12 +24,13 @@
   },
   "homepage": "https://github.com/mixmaxhq/mongo-slow-queries#readme",
   "devDependencies": {
-    "eslint": ">=3",
-    "eslint-config-mixmax": "^0.6.0",
+    "eslint": "^5.12.1",
+    "eslint-config-mixmax": "^2.0.0",
     "jasmine": "^2.5.3",
     "pre-commit": "^1.2.2"
   },
   "dependencies": {
+    "promise-callbacks": "^3.2.2",
     "underscore": "^1.8.3"
   },
   "pre-commit": [

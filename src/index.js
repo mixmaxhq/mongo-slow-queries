@@ -1,5 +1,4 @@
-'use strict';
-
+const { deferred } = require('promise-callbacks');
 const assert = require('assert');
 const _ = require('underscore');
 
@@ -56,11 +55,10 @@ class MongoSlowQueryChecker {
    *   appName: The client application responsible for this operation
    * }]
    * ```
-   *
-   * @param {Function} done Node style callback.
    */
-  get(done) {
-    this.db.runCommand({
+  async get() {
+    const isMongoJS = typeof this.db.__getConnection === 'function';
+    const command = {
       currentOp: true,
       active: true,
       op: {
@@ -69,26 +67,43 @@ class MongoSlowQueryChecker {
       secs_running: {
         $gte: this.queryThreshold
       }
-    }, (err, ops) => {
-      let inprog = ops && ops.inprog;
-      if (!inprog || !inprog.length) {
-        // Short circuit early.
-        done(null, []);
-        return;
-      }
+    };
 
-      var processed = _.map(inprog, (op) => {
-        return {
-          query: op,
-          fingerprint: fingerprint(op.query),
-          collection: op.ns ? op.ns.replace(/.*\./, '') : '(no collection)',
-          indexed: op.planSummary && this.isIndexed(op),
-          waitingForLock: op.waitingForLock,
-          appName: op.appName
-        };
-      });
-      done(null, processed);
+    let ops;
+    if (isMongoJS) {
+      const promise = deferred();
+      this.db.runCommand(command, promise.defer());
+      ops = await promise;
+    } else {
+      ops = await this.db.runCommand(command);
+    }
+    return this.processOps(ops);
+  }
+
+  /**
+   * Returns an array of ops given the result of a db command.
+   *
+   * @param      {Object}  ops     The result of an op query.
+   * @return     {Array}   An array of formatted mongo ops with details about their run time..
+   */
+  processOps(ops) {
+    const inprog = ops && ops.inprog;
+    if (!inprog || !inprog.length) {
+      // Short circuit early.
+      return [];
+    }
+
+    const processed = _.map(inprog, (op) => {
+      return {
+        query: op,
+        fingerprint: fingerprint(op.query),
+        collection: op.ns ? op.ns.replace(/.*\./, '') : '(no collection)',
+        indexed: op.planSummary && this.isIndexed(op),
+        waitingForLock: op.waitingForLock,
+        appName: op.appName
+      };
     });
+    return processed;
   }
 
   /**
