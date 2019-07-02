@@ -74,7 +74,10 @@ class MongoSlowQueryChecker {
       const promise = deferred();
       this.db.runCommand(command, promise.defer());
       ops = await promise;
+    } else if (typeof this.db.adminCommand === 'function') {
+      ops = await this.db.adminCommand(command);
     } else {
+      // Assume this.db is a reference to the 'admin' db
       ops = await this.db.runCommand(command);
     }
     return this.processOps(ops);
