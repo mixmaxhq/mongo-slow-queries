@@ -17,10 +17,12 @@ creating an instance:
 const mongojs = require('mongojs');
 const MongoSlowQueryChecker = require('mongo-slow-queries');
 
-let db = mongojs('mongodb://localhost:27017/my-db');
+let db = mongojs('mongodb://localhost:27017/admin');
 let slowQueries = new MongoSlowQueryChecker({ db });
 ```
 
+If the `db` object has an `adminCommand` method, it need not be a reference to 
+the `admin` database.
 
 ### Querying for slow queries
 Querying for slow queries is then as simple as calling `get`:
