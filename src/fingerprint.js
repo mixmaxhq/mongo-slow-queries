@@ -1,6 +1,5 @@
 const _ = require('underscore');
 
-
 /**
  * arrayFingerprint generates a key based fingerprint for objects in an array.
  * @param  {Array} ra The array to fingerprint.

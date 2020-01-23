@@ -62,11 +62,11 @@ class MongoSlowQueryChecker {
       currentOp: true,
       active: true,
       op: {
-        $ne: 'none'
+        $ne: 'none',
       },
       secs_running: {
-        $gte: this.queryThreshold
-      }
+        $gte: this.queryThreshold,
+      },
     };
 
     let ops;
@@ -103,7 +103,7 @@ class MongoSlowQueryChecker {
         collection: op.ns ? op.ns.replace(/.*\./, '') : '(no collection)',
         indexed: op.planSummary && this.isIndexed(op),
         waitingForLock: op.waitingForLock,
-        appName: op.appName
+        appName: op.appName,
       };
     });
     return processed;
