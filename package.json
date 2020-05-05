@@ -1,6 +1,6 @@
 {
   "name": "mongo-slow-queries",
-  "version": "2.0.1",
+  "version": "2.0.2-AUTO-195.0",
   "description": "Utility for identifying slow queries in Mongo",
   "main": "src/index.js",
   "scripts": {
