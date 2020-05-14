@@ -26,6 +26,11 @@ class MongoSlowQueryChecker {
   /**
    * Creates the MongoSlowQueryChecker.
    *
+   * When using `system.profile`, it will only return queries which both exceed the
+   * provided `options.queryThreshold` and the db's slow query threshold -- unless
+   * the profiler is at level 2 (use `--profile 2` in the MongoDB command line), in
+   * which case only `options.queryThreshold` matters.
+   *
    * @param {Object} options Options to use to create the Mongo slow query
    *    checker.
    *    @property {Object} options.db The Mongo DB reference.
@@ -76,9 +81,6 @@ class MongoSlowQueryChecker {
   /**
    * Get relevant (slow/COLLSCAN) queries from the `system.profile` table, ensuring we don't
    * repeatedly return the same queries in consecutive runs.
-   *
-   * Note that this only returns queries longer than both this.queryThreshold and the mongod
-   * servers slow query threshold.
    */
   async getFromSystemProfile() {
     this.profile = this.profile || (await this.db.connect()).collection('system.profile');
@@ -91,8 +93,8 @@ class MongoSlowQueryChecker {
     }
 
     const queries = await this.profile.find(profileQuery).toArray();
+    if (!_.isEmpty(queries)) this.lastTimestampInSystemProfile = _.max(_.map(queries, (q) => q.ts));
 
-    this.lastTimestampInSystemProfile = _.max(_.map(queries, (q) => q.ts));
     return queries;
   }
 
