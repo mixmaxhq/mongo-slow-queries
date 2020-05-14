@@ -88,8 +88,8 @@ class MongoSlowQueryChecker {
     }
 
     const queries = await this.profile.find(profileQuery).toArray();
+    if (!_.isEmpty(queries)) this.lastTimestampInSystemProfile = _.max(_.map(queries, (q) => q.ts));
 
-    this.lastTimestampInSystemProfile = _.max(_.map(queries, (q) => q.ts));
     return queries;
   }
 
